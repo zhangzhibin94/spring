@@ -91,6 +91,7 @@ public interface PropertyResolver {
 	<T> T getRequiredProperty(String key, Class<T> targetType) throws IllegalStateException;
 
 	/**
+	 * 在给定的文本中解析$ {...}占位符，将其替换为{@link #getProperty}解析的相应属性值。 没有默认值将被忽略并通过不变。
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
 	 * property values as resolved by {@link #getProperty}. Unresolvable placeholders with
 	 * no default value are ignored and passed through unchanged.

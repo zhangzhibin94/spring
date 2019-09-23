@@ -40,6 +40,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.tests.sample.beans.ResourceTestBean;
+import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -399,6 +400,13 @@ public class ClassPathXmlApplicationContextTests {
 		assertTrue(ctx.containsBean("logicOne"));
 		assertTrue(ctx.containsBean("logicTwo"));
 		ctx.close();
+	}
+
+	@Test
+	public void testClassPathXmlBeanFactory(){
+		ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("classpathXmlBeanApplicationContext-test.xml");
+		TestBean testBean = (TestBean) classPathXmlApplicationContext.getBean("testBean");
+		System.out.println(testBean.getSex());
 	}
 
 }

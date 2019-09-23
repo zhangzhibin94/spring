@@ -70,6 +70,8 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
+	 * 设置此应用程序上下文配置文件
+	 * @param locations 本质上是String类型数组，每个元素都是配置文件路径
 	 * Set the config locations for this application context.
 	 * <p>If not set, the implementation may use a default as appropriate.
 	 */
@@ -77,7 +79,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 		if (locations != null) {
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
+			//遍历并处理配置文件路径
 			for (int i = 0; i < locations.length; i++) {
+				//resolvePath 处理文件路径，如果包含${}会被解析，否则保持不变。最后trim()去除空字符
 				this.configLocations[i] = resolvePath(locations[i]).trim();
 			}
 		}
@@ -115,11 +119,13 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 	/**
+	 * 解析给定的路径，必要时用相应的环境属性值替换占位符。 应用于配置文件路径。
 	 * Resolve the given path, replacing placeholders with corresponding
 	 * environment property values if necessary. Applied to config locations.
-	 * @param path the original file path
-	 * @return the resolved file path
+	 * @param path the original file path 原始文件路径
+	 * @return the resolved file path	处理后的文件路径
 	 * @see org.springframework.core.env.Environment#resolveRequiredPlaceholders(String)
+	 * 在给定的文本中解析$ {...}占位符，将其替换为{@link #getProperty}解析的相应属性值.没有默认值将被忽略并通过不变。
 	 */
 	protected String resolvePath(String path) {
 		return getEnvironment().resolveRequiredPlaceholders(path);

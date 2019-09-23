@@ -513,10 +513,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 *	此处使用了模板模式，定义好整个refresh流程，部分方法交给子类去实现
+	 * @throws BeansException
+	 * @throws IllegalStateException
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
-			// Prepare this context for refreshing.
+			// 为刷新准备上下文
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
@@ -579,6 +584,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 设置其启动日期和活动标志以及执行属性源的任何初始化
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
@@ -593,24 +599,31 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment.
+		// 在上下文环境中初始化所有占位符属性源。默认不进行任何操作
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		// 验证所有标记为必需的属性都是可解析的：请参见ConfigurablePropertyResolver＃setRequiredProperties
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
+		// 存储预刷新的ApplicationListeners ... 暂时还不知道这玩意用来干嘛的，应该是最近新加的
 		if (this.earlyApplicationListeners == null) {
+			// 初始化容器的时候必定走这一步，earlyApplicationListeners目前是一个空的LinkedHashSet
 			this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
 		}
 		else {
 			// Reset local application listeners to pre-refresh state.
+			// 将本地应用程序监听器重置为预刷新状态。
 			this.applicationListeners.clear();
 			this.applicationListeners.addAll(this.earlyApplicationListeners);
 		}
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
+		// 允许收集早期的ApplicationEvent，一旦多路广播可用，便会发布...
+		// 目前只是一个空的LinkedHashSet
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 
