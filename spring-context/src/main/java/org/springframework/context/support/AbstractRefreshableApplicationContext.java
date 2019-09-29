@@ -116,20 +116,26 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 
 
 	/**
+	 * 此实现对该上下文的基础bean工厂进行实际刷新，关闭前一个bean Factory（如果有），
+	 * 并为该上下文生命周期的下一阶段初始化一个新的bean Factory。
 	 * This implementation performs an actual refresh of this context's underlying
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
+		// 如果已经有容器，销毁容器中的 bean，关闭容器
 		if (hasBeanFactory()) {
 			destroyBeans();
 			closeBeanFactory();
 		}
 		try {
+			//初始化 IOC 容器,即创建DefaultListableBeanFactory,最终是调用了AbstractBeanFactory的无参构造
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
 			beanFactory.setSerializationId(getId());
+			//对 IOC 容器进行定制化，如设置启动参数，开启注解的自动装配等
 			customizeBeanFactory(beanFactory);
+			//☆☆☆☆☆  调用子类AbstractXmlApplicationContext的loadBeanDefinitions方法 加载bean
 			loadBeanDefinitions(beanFactory);
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
@@ -190,6 +196,10 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	}
 
 	/**
+	 * 为此上下文创建一个内部bean工厂。 每次尝试{@link #refresh（）}时都要调用。
+	 * <p>默认实现创建一个{@link org.springframework.beans.factory.support.DefaultListableBeanFactory}，
+	 * 并将该上下文的父级的{@linkplain #getInternalParentBeanFactory（）内部bean工厂}作为父bean工厂。
+	 * 可以在子类中重写，例如，以自定义DefaultListableBeanFactory的设置。
 	 * Create an internal bean factory for this context.
 	 * Called for each {@link #refresh()} attempt.
 	 * <p>The default implementation creates a

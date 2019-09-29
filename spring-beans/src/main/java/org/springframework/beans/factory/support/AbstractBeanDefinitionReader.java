@@ -210,6 +210,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		//获取在 IoC 容器初始化过程中设置的资源加载器,即获取在AbstractXmlApplicationContext的loadDefinition()方法中设置的资源加载器
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
@@ -218,6 +219,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
+			// 资源模式匹配可用。
 			try {
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
 				int loadCount = loadBeanDefinitions(resources);
@@ -238,6 +240,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 		}
 		else {
 			// Can only load single resources by absolute URL.
+			// 只能通过绝对路径加载单个资源。todo:不知道在什么情况下会走到这里
 			Resource resource = resourceLoader.getResource(location);
 			int loadCount = loadBeanDefinitions(resource);
 			if (actualResources != null) {
@@ -254,6 +257,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	public int loadBeanDefinitions(String... locations) throws BeanDefinitionStoreException {
 		Assert.notNull(locations, "Location array must not be null");
 		int counter = 0;
+		// 遍历locations 并返回加载的配置文件个数
 		for (String location : locations) {
 			counter += loadBeanDefinitions(location);
 		}

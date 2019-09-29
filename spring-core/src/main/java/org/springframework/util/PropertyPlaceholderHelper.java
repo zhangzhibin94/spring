@@ -28,6 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.lang.Nullable;
 
 /**
+ * 用于处理其中具有占位符值的字符串的实用程序类。
+ * 占位符的格式为{@code $ {name}}。 使用{@code PropertyPlaceholderHelper}，
+ * 可以将这些占位符替换为用户提供的值。 <p>可以使用{@link Properties}实例或使用{@link PlaceholderResolver}提供替换值。
  * Utility class for working with Strings that have placeholder values in them. A placeholder takes the form
  * {@code ${name}}. Using {@code PropertyPlaceholderHelper} these placeholders can be substituted for
  * user-supplied values. <p> Values for substitution can be supplied using a {@link Properties} instance or

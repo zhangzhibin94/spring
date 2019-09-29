@@ -222,6 +222,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 */
 	public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		// 构造方法,设置spring的资源加载器
 		this.resourceLoader = resourceLoader;
 	}
 
@@ -273,13 +274,17 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		return getResourceLoader().getResource(location);
 	}
 
+
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		Assert.notNull(locationPattern, "Location pattern must not be null");
+		// 如果是一classPath:开头的
 		if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
 			// a class path resource (multiple resources for same name possible)
+			// 类路径资源（可能有多个相同名称的资源）
 			if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
 				// a class path resource pattern
+				// 类路径资源模式
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
@@ -290,6 +295,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		else {
 			// Generally only look for a pattern after a prefix here,
 			// and on Tomcat only after the "*/" separator for its "war:" protocol.
+			// 通常，仅在前缀之后寻找模式，而在Tomcat上仅在其“ war：”协议的“ * /”分隔符之后寻找。
 			int prefixEnd = (locationPattern.startsWith("war:") ? locationPattern.indexOf("*/") + 1 :
 					locationPattern.indexOf(':') + 1);
 			if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {

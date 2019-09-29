@@ -109,6 +109,7 @@ class BeanDefinitionValueResolver {
 		// 对引用类型的属性进行解析
 		if (value instanceof RuntimeBeanReference) {
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
+			//直接调用本类中的方法解析引用类型
 			return resolveReference(argName, ref);
 		}
 		else if (value instanceof RuntimeBeanNameReference) {
@@ -120,11 +121,13 @@ class BeanDefinitionValueResolver {
 			}
 			return refName;
 		}
+		// 对Bean类型属性的解析,主要是bean中的内部类
 		else if (value instanceof BeanDefinitionHolder) {
 			// Resolve BeanDefinitionHolder: contains BeanDefinition with name and aliases.
 			BeanDefinitionHolder bdHolder = (BeanDefinitionHolder) value;
 			return resolveInnerBean(argName, bdHolder.getBeanName(), bdHolder.getBeanDefinition());
 		}
+		// 是否是对bean的描述类BeanDefinition
 		else if (value instanceof BeanDefinition) {
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			BeanDefinition bd = (BeanDefinition) value;
@@ -132,6 +135,7 @@ class BeanDefinitionValueResolver {
 					ObjectUtils.getIdentityHexString(bd);
 			return resolveInnerBean(argName, innerBeanName, bd);
 		}
+		// 对集合数组类型进行解析
 		else if (value instanceof ManagedArray) {
 			// May need to resolve contained runtime references.
 			ManagedArray array = (ManagedArray) value;
@@ -140,6 +144,7 @@ class BeanDefinitionValueResolver {
 				String elementTypeName = array.getElementTypeName();
 				if (StringUtils.hasText(elementTypeName)) {
 					try {
+						// 使用jdk反射机制获取class对象
 						elementType = ClassUtils.forName(elementTypeName, this.beanFactory.getBeanClassLoader());
 						array.resolvedElementType = elementType;
 					}
@@ -285,6 +290,7 @@ class BeanDefinitionValueResolver {
 
 	/**
 	 * Resolve a reference to another bean in the factory.
+	 * 解析引用类型,bean必须是在IOC容器中已经存在的
 	 */
 	@Nullable
 	private Object resolveReference(Object argName, RuntimeBeanReference ref) {
@@ -292,6 +298,7 @@ class BeanDefinitionValueResolver {
 			Object bean;
 			String refName = ref.getBeanName();
 			refName = String.valueOf(doEvaluate(refName));
+			//如果引用的对象在父类容器中 则直接从父类容器中取
 			if (ref.isToParent()) {
 				if (this.beanFactory.getParentBeanFactory() == null) {
 					throw new BeanCreationException(
@@ -301,6 +308,7 @@ class BeanDefinitionValueResolver {
 				}
 				bean = this.beanFactory.getParentBeanFactory().getBean(refName);
 			}
+			// 否则从当前容器中取指定的引用bean对象,如果指定的bean没有被实例化,则会递归调用引用bean的初始化和依赖注入
 			else {
 				bean = this.beanFactory.getBean(refName);
 				this.beanFactory.registerDependentBean(refName, this.beanName);
@@ -383,10 +391,12 @@ class BeanDefinitionValueResolver {
 
 	/**
 	 * For each element in the managed array, resolve reference if necessary.
+	 * 解析数组类型
 	 */
 	private Object resolveManagedArray(Object argName, List<?> ml, Class<?> elementType) {
 		Object resolved = Array.newInstance(elementType, ml.size());
 		for (int i = 0; i < ml.size(); i++) {
+			// 使用lambda表达式 相当于list.add(entity)
 			Array.set(resolved, i, resolveValueIfNecessary(new KeyedArgName(argName, i), ml.get(i)));
 		}
 		return resolved;
@@ -431,6 +441,7 @@ class BeanDefinitionValueResolver {
 
 
 	/**
+	 * 用于延迟toString构建的Holder类。
 	 * Holder class used for delayed toString building.
 	 */
 	private static class KeyedArgName {

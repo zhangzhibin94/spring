@@ -80,17 +80,27 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
+		// 为给定的BeanFactory创建一个新的XmlBeanDefinitionReader用于读取,
+		// 并通过回调设置到容器中去，容器使用该读取器读取Bean定义资源
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
+		// 使用此上下文的资源加载环境配置bean定义阅读器。this.getEnvironment()获取当前操作系统的环境变量等信息
 		beanDefinitionReader.setEnvironment(this.getEnvironment());
+		// 设置资源加载器为当前对象,当前类的祖先父类AbstractApplicationContext 继承 DefaultResourceLoader,
+		// DefaultResourceLoader实现了资源加载器接口ResourceLoader, 因此当前类AbstractXmlApplicationContext本身就是一个资源加载器
 		beanDefinitionReader.setResourceLoader(this);
+		// 为Bean读取器设置 SAX xml 解析器, new ResourceEntityResolver(this) 初始化了两个读取器 DTD读取器和XSD读取器
+		// 并设置了ResourceEntityResolver的resourceLoader为当前对象
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		// 允许子类提供读取器的自定义初始化，然后继续实际加载BeanDefinition。
+		// 默认设置beanDefinitionReader的validating属性为true
 		initBeanDefinitionReader(beanDefinitionReader);
+		// 继续加载beanDefinition
 		loadBeanDefinitions(beanDefinitionReader);
 	}
 
@@ -107,6 +117,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	}
 
 	/**
+	 * 使用加载器加载beanDefinitions
 	 * Load the bean definitions with the given XmlBeanDefinitionReader.
 	 * <p>The lifecycle of the bean factory is handled by the {@link #refreshBeanFactory}
 	 * method; hence this method is just supposed to load and/or register bean definitions.
@@ -119,10 +130,13 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getResourcePatternResolver
 	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+		// 获取 Bean 定义资源的定位,数组为空 todo: 这里getConfigResources()直接返回一个null 为何要这么做?
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			reader.loadBeanDefinitions(configResources);
 		}
+		// 直接走到这一步,获取刚才在ClassPathXmlApplicationContext中setLocation()中设置的路径,
+		// 即AbstractRefreshableConfigApplicationContext的configLocations数组属性
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			reader.loadBeanDefinitions(configLocations);

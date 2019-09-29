@@ -232,7 +232,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @param parent the parent context
 	 */
 	public AbstractApplicationContext(@Nullable ApplicationContext parent) {
+		// 调用无参构造方法
 		this();
+		// 设置父容器
 		setParent(parent);
 	}
 
@@ -442,6 +444,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 返回ResourcePatternResolver，用于将位置模式解析为Resource实例。
+	 * 默认值为{@link org.springframework.core.io.support.PathMatchingResourcePatternResolver}，
+	 * 支持Ant样式的位置模式。<p>可以在子类中覆盖，以用于扩展分辨率策略，例如在Web环境中。
+	 * <p> <b>在需要解析位置模式时不要调用此方法。</ b>而是调用上下文的{@code getResources}方法，
+	 * 该方法将委派给ResourcePatternResolver。
+	 * *****************************************************************************************
 	 * Return the ResourcePatternResolver to use for resolving location patterns
 	 * into Resource instances. Default is a
 	 * {@link org.springframework.core.io.support.PathMatchingResourcePatternResolver},
@@ -456,6 +464,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.core.io.support.PathMatchingResourcePatternResolver
 	 */
 	protected ResourcePatternResolver getResourcePatternResolver() {
+		// AbstractApplicationContext 继承 DefaultResourceLoader，因此也是一个资源加载器
+		// Spring 资源加载器，其 getResource(String location)方法用于载入资源
 		return new PathMatchingResourcePatternResolver(this);
 	}
 
@@ -520,11 +530,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		// 同步锁,防止在多线程环境下同时刷新
 		synchronized (this.startupShutdownMonitor) {
-			// 为刷新准备上下文
+			// 为刷新准备上下文 获取容器的当前时间，同时给容器设置同步标识
 			prepareRefresh();
 
-			// Tell the subclass to refresh the internal bean factory.
+			// ☆☆☆☆☆ 告诉子类启动 refreshBeanFactory()方法，Bean 定义资源文件的载入从子类的 refreshBeanFactory()方法启动
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
@@ -608,7 +619,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		getEnvironment().validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
-		// 存储预刷新的ApplicationListeners ... 暂时还不知道这玩意用来干嘛的，应该是最近新加的
+		// 存储预刷新的ApplicationListeners ... 暂时还不知道这玩意用来干嘛的，应该是最近新加的,然后最新的5.1.x又取消了
 		if (this.earlyApplicationListeners == null) {
 			// 初始化容器的时候必定走这一步，earlyApplicationListeners目前是一个空的LinkedHashSet
 			this.earlyApplicationListeners = new LinkedHashSet<>(this.applicationListeners);
@@ -622,7 +633,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
-		// 允许收集早期的ApplicationEvent，一旦多路广播可用，便会发布...
+		// 允许收集早期的ApplicationEvent，一旦多路可用，便会发布...
 		// 目前只是一个空的LinkedHashSet
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
@@ -637,12 +648,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
+	 * 告诉子类刷新内部bean factory
 	 * Tell the subclass to refresh the internal bean factory.
 	 * @return the fresh BeanFactory instance
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 调用用子类容器AbstractRefreshableApplicationContext的refreshBeanFactory()
 		refreshBeanFactory();
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (logger.isDebugEnabled()) {

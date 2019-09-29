@@ -137,13 +137,17 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	public ClassPathXmlApplicationContext(
 			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
 			throws BeansException {
-		//设置父容器
+		// 设置父容器以及资源加载器PathMatchingResourcePatternResolver()
 		super(parent);
-		//设置配置文件路径 父类AbstractRefreshableConfigApplicationContext的configLocation属性中
+		// 设置并解析配置文件路径,如果路径中包含${},则最后会调用工具类PropertyPlaceholderHelper的parseStringValue方法解析路径,
+		// 具体解析过程还没怎么看.如果不包含${}, 则直接将路径设置到父类AbstractRefreshableConfigApplicationContext的configLocations数组属性中
 		setConfigLocations(configLocations);
-		//除非设置refresh为false 否则默认情况下refresh都为true
+		//除非主动设置refresh为false 否则默认情况下refresh都为true
 		if (refresh) {
-			//★★★★★ 加载配置文件并且实例化所有配置好的bean
+			// ★★★★★ 加载配置文件并且实例化所有配置好的bean
+			// refresh()方法的作用是：在创建 IOC 容器前，如果已经有容器存在，则需要把已有的容器销毁和关闭，
+			// 以保证在 refresh 之后使用的是新建立起来的 IOC 容器。refresh 的作用类似于对 IOC 容器的重启，
+			// 在新建立好的容器中对容器进行初始化，对Bean定义资源进行载入
 			refresh();
 		}
 	}

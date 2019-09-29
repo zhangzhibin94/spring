@@ -63,6 +63,8 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
 	/**
+	 * 将给定的位置模式解析为Resource对象。
+	 *  <p>指向相同物理资源的重叠资源条目应尽可能避免使用资源。 结果应具有设定的语义。
 	 * Resolve the given location pattern into Resource objects.
 	 * <p>Overlapping resource entries that point to the same physical
 	 * resource should be avoided, as far as possible. The result should

@@ -128,6 +128,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	 * 在给定的文本中解析$ {...}占位符，将其替换为{@link #getProperty}解析的相应属性值.没有默认值将被忽略并通过不变。
 	 */
 	protected String resolvePath(String path) {
+		//getEnvironment() 是一个map key :systemProperties value为当前操作系统的环境变量,是一个property对象
 		return getEnvironment().resolveRequiredPlaceholders(path);
 	}
 
