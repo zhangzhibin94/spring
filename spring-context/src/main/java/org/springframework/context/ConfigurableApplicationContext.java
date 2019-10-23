@@ -27,6 +27,9 @@ import org.springframework.core.io.ProtocolResolver;
 import org.springframework.lang.Nullable;
 
 /**
+ * SPI接口将由大多数（如果不是全部）应用程序上下文实现。
+ * 除了{@link org.springframework.context.ApplicationContext}接口中的应用程序上下文客户端方法之外，
+ * 还提供了配置应用程序上下文的功能。
  * SPI interface to be implemented by most if not all application contexts.
  * Provides facilities to configure an application context in addition
  * to the application context client methods in the
@@ -46,7 +49,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * Any number of these characters are considered delimiters between
 	 * multiple context config paths in a single String value.
 	 * @see org.springframework.context.support.AbstractXmlApplicationContext#setConfigLocation
-	 * @see org.springframework.web.context.ContextLoader#CONFIG_LOCATION_PARAM
+	 * @see org.springframework.web.context.ContextLoader
 	 * @see org.springframework.web.servlet.FrameworkServlet#setContextConfigLocation
 	 */
 	String CONFIG_LOCATION_DELIMITERS = ",; \t\n";
