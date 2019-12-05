@@ -85,7 +85,14 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 		setTransactionAttributeSource(tas);
 	}
 
-
+	/**
+	 * 创建aop代理对象完成后，每次调用代理对象的方法，都会走代理对象的interceptor方法，
+	 * 在interceptor方法中，会调用拦截器链proceed(),此方法中会调用拦截器的invoke方法，就是此处的invoke
+	 * 当获取的拦截器为TransactionInterceptor时，会调用此处的invoke方法
+	 * @param invocation the method invocation joinpoint
+	 * @return
+	 * @throws Throwable
+	 */
 	@Override
 	@Nullable
 	public Object invoke(MethodInvocation invocation) throws Throwable {
